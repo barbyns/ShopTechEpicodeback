@@ -2,7 +2,7 @@ package model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -14,11 +14,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+
+    private String nome;
+    private String cognome;
+
     @Column(unique = true)
     private String email;
+
     private String password;
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles")
-    private Set <String> roles;
+
+    private String ruolo; // singolo ruolo (es. "USER" o "ADMIN")
 }
