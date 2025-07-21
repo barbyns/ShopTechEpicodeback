@@ -6,8 +6,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import service.UserService;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -17,13 +15,20 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
+  //Get user
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id){
+        return userService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    //Put
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable)
     @GetMapping("/me")
     public ResponseEntity<User> getMe(Authentication authentication) {
-        String email = authentication.getName(); // JWT contiene l'email come subject
-        Optional<User> user = userService.findByEmail(email);
-
-        return user.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        String email = authentication.getName(); // recuperato dal JWT
+        User user = userService.getByEmailOrThrow(email);
+        return ResponseEntity.ok(user);
     }
 }
