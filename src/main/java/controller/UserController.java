@@ -24,7 +24,24 @@ public class UserController {
     }
     //Put
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable)
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updateUser){
+        return userService.findById(id).map(user -> {
+            user.setNome(updateUser.getNome());
+            user.setCognome(updateUser.getCognome());
+            user.setEmail(updateUser.getEmail());
+            user.setPassword(updateUser.getPassword());
+            return ResponseEntity.ok(userService.save(user));
+        }).orElse(ResponseEntity.notFound().build());
+        }
+        // Delete
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
+        if(userService.findById(id).isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        userService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
     @GetMapping("/me")
     public ResponseEntity<User> getMe(Authentication authentication) {
         String email = authentication.getName(); // recuperato dal JWT
