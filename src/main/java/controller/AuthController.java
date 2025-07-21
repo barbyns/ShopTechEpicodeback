@@ -1,5 +1,6 @@
 package controller;
 
+import dto.AuthResponseDto;
 import dto.LoginDto;
 import dto.RegisterDto;
 import jakarta.validation.Valid;
@@ -32,26 +33,28 @@ public class AuthController {
 
     // ✅ REGISTRAZIONE
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody @Valid RegisterDto registerDto) {
+    public ResponseEntity<AuthResponseDto> register(@RequestBody @Valid RegisterDto registerDto) {
         if (userService.existsByEmail(registerDto.getEmail())) {
-            return ResponseEntity.badRequest().body("Email già registrata.");
+            return ResponseEntity.badRequest().body(
+                    new AuthResponseDto("Email già registrata.", null)
+            );
         }
 
         User user = new User();
-        user.setNome(registerDto.getNome());
-        user.setCognome(registerDto.getCognome());
+        user.setNome(registerDto.getNome());           // Usa il nome corretto del campo
+        user.setCognome(registerDto.getCognome());     // Usa il nome corretto del campo
         user.setEmail(registerDto.getEmail());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
         user.setRuolo("USER");
 
         userService.save(user);
 
-        return ResponseEntity.ok("Registrazione avvenuta con successo!");
+        return ResponseEntity.ok(new AuthResponseDto("Registrazione avvenuta con successo!", null));
     }
 
     // ✅ LOGIN
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid LoginDto loginDto) {
+    public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getEmail(),
@@ -60,6 +63,6 @@ public class AuthController {
         );
 
         String jwt = jwtUtil.generateToken(authentication.getName());
-        return ResponseEntity.ok(jwt);
+        return ResponseEntity.ok(new AuthResponseDto("Login effettuato con successo", jwt));
     }
 }

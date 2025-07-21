@@ -6,12 +6,11 @@ import lombok.*;
 import java.util.Set;
 
 @Entity
-@Getter
-@Setter
+@Table(name = "users")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "users")
 public class User {
 
     @Id
@@ -19,20 +18,20 @@ public class User {
     private Long id;
 
     private String nome;
-
     private String cognome;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles")
-    private Set<String> roles;
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "ruolo")
+    private Set<String> ruoli;
 
-    // Metodo di supporto per assegnare un ruolo singolo
+    // Metodo di utilità per impostare un ruolo singolo (es: "USER")
     public void setRuolo(String ruolo) {
-        this.roles = Set.of(ruolo);
+        this.ruoli = Set.of(ruolo);
     }
 }

@@ -1,34 +1,29 @@
 package controller;
+
 import model.User;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import service.UserService;
 
-import lombok.RequiredArgsConstructor;
+import java.util.Optional;
 
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
 
-    @RestController
-    @RequestMapping("/api/user")
-    @RequiredArgsConstructor
-    public class UserController {
+    private final UserService userService;
 
-        private final UserService userService;
-
-        @GetMapping("/me")
-        public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-            if (userDetails == null) {
-                return ResponseEntity.status(401).body("Utente non autenticato");
-            }
-
-            // Recupera l'utente dal database usando l'email
-            User user = userService.findByEmail(userDetails.getUsername());
-
-            if (user == null) {
-                return ResponseEntity.status(404).body("Utente non trovato");
-            }
-
-            return ResponseEntity.ok(user);
-        }
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<User> getMe(Authentication authentication) {
+        String email = authentication.getName(); // JWT contiene l'email come subject
+        Optional<User> user = userService.findByEmail(email);
+
+        return user.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+}
