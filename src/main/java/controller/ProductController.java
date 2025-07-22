@@ -19,13 +19,13 @@ public class ProductController {
         this.productService = productService;
     }
 
-    // ✅ GET all products
+
     @GetMapping
     public List<Product> getAllProducts() {
         return productService.findAll();
     }
 
-    // ✅ GET product by ID
+
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return productService.findById(id)
@@ -33,7 +33,7 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ POST create new product
+
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         Product saved = productService.save(product);
@@ -45,7 +45,7 @@ public class ProductController {
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
         return productService.findById(id)
                 .map(product -> {
-                    product.setName(productDetails.getName());
+                    product.setNome(productDetails.getNome());
                     product.setDescrizione(productDetails.getDescrizione());
                     product.setPrezzo(productDetails.getPrezzo());
                     product.setQuantity(productDetails.getQuantity());
@@ -55,7 +55,7 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ DELETE product by ID
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         return productService.findById(id)
