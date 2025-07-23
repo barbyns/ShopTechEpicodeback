@@ -4,8 +4,8 @@ import dto.AuthResponseDto;
 import dto.LoginDto;
 import dto.RegisterDto;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,39 +17,34 @@ import util.JwtUtil;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(@RequestBody @Valid RegisterDto registerDto) {
         if (userService.existsByEmail(registerDto.getEmail())) {
-            return ResponseEntity.badRequest().body(
-                    new AuthResponseDto("Email già registrata.", null)
-            );
+            return ResponseEntity
+                    .badRequest()
+                    .body(new AuthResponseDto("Email già registrata", null));
         }
 
-        User user = new User();
-        user.setNome(registerDto.getNome());           // Usa il nome corretto del campo
-        user.setCognome(registerDto.getCognome());     // Usa il nome corretto del campo
-        user.setEmail(registerDto.getEmail());
-        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        user.setRuolo("USER");
+        User user = User.builder()
+                .nome(registerDto.getNome())
+                .cognome(registerDto.getCognome())
+                .email(registerDto.getEmail())
+                .password(passwordEncoder.encode(registerDto.getPassword()))
+                .build();
 
+        user.setRuolo("USER");
         userService.save(user);
 
-        return ResponseEntity.ok(new AuthResponseDto("Registrazione avvenuta con successo!", null));
+        return ResponseEntity.ok(new AuthResponseDto("Registrazione completata", null));
     }
 
     // ✅ LOGIN
