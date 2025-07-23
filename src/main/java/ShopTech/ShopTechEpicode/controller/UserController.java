@@ -1,9 +1,10 @@
 package ShopTech.ShopTechEpicode.controller;
 
 import ShopTech.ShopTechEpicode.model.User;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import ShopTech.ShopTechEpicode.service.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -15,7 +16,7 @@ public class UserController {
         this.userService = userService;
     }
 
-
+    // Ottieni utente per ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Integer id) {
         return userService.findById(id)
@@ -23,7 +24,7 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ PUT user update
+    // Aggiorna utente
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User updateUser) {
         return userService.findById(id).map(user -> {
@@ -35,6 +36,12 @@ public class UserController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-
-    public ResponseEntity<Void> deleteUs;
+    // Ottieni utente autenticato (profilo)
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyProfile(Authentication authentication) {
+        String email = authentication.getName(); // Username/email dal token JWT
+        return userService.findByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

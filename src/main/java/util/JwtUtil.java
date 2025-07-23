@@ -13,8 +13,10 @@ import java.util.Date;
 public class JwtUtil {
 
     // Chiave base64 sicura a 256 bit (minimo per HS512)
-    private final String SECRET = "c2VjdXJlU2VjcmV0S2V5MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNA==";
+    private final String SECRET = "8jU4AXUzqLs6bW1g0MF0YHpPsn7Y+aFgS53zrNWhQrjZ7SYok7PNzvYo3VCYxUDBX+GZbIgGCX04Vxf1xFZTwQ==";
     private final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET));
+
+
 
     // Validità del token: 24 ore
     private final long EXPIRATION_MS = 1000 * 60 * 60 * 24;
