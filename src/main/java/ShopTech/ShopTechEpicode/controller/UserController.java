@@ -16,7 +16,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    // Ottieni utente per ID
+    // 🔹 Ottieni utente per ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Integer id) {
         return userService.findById(id)
@@ -24,22 +24,35 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Aggiorna utente
+    // 🔹 Modifica utente
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User updateUser) {
-        return userService.findById(id).map(user -> {
-            user.setNome(updateUser.getNome());
-            user.setCognome(updateUser.getCognome());
-            user.setEmail(updateUser.getEmail());
-            user.setPassword(updateUser.getPassword());
-            return ResponseEntity.ok(userService.save(user));
-        }).orElse(ResponseEntity.notFound().build());
+        return userService.findById(id)
+                .map(user -> {
+                    user.setNome(updateUser.getNome());
+                    user.setCognome(updateUser.getCognome());
+                    user.setEmail(updateUser.getEmail());
+                    user.setPassword(updateUser.getPassword());
+                    return ResponseEntity.ok(userService.save(user));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // Ottieni utente autenticato (profilo)
+    // 🔹 Elimina utente
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+        return userService.findById(id)
+                .<ResponseEntity<Void>>map(user -> {
+                    userService.deleteById(id);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // 🔹 Ottieni profilo utente loggato
     @GetMapping("/me")
     public ResponseEntity<?> getMyProfile(Authentication authentication) {
-        String email = authentication.getName(); // Username/email dal token JWT
+        String email = authentication.getName();  // estrai email/username dal token JWT
         return userService.findByEmail(email)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
