@@ -1,7 +1,9 @@
 package service;
 
 import dto.OrderItemDto;
+import dto.OrderItemResponseDto;
 import dto.OrderRequestDto;
+import dto.OrderResponseDto;
 import model.Order;
 import model.OrderItem;
 import model.Product;
@@ -14,6 +16,7 @@ import repositories.ProductRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -27,7 +30,7 @@ public class OrderService {
         this.productRepository = productRepository;
     }
 
-    public Order createOrder(User utente, OrderRequestDto orderDto) {
+    public OrderResponseDto createOrder(User utente, OrderRequestDto orderDto) {
         Order ordine = new Order();
         ordine.setUtente(utente);
         ordine.setDataOrdine(LocalDateTime.now());
@@ -52,10 +55,34 @@ public class OrderService {
         ordine.setItems(items);
         ordine.setTotale(totale);
 
-        return orderRepository.save(ordine);
+        Order ordineSalvato = orderRepository.save(ordine);
+
+        return convertToDto(ordineSalvato);
     }
 
-    public List<Order> getOrdersByUser(User utente) {
-        return orderRepository.findByUtente(utente);
+    public List<OrderResponseDto> getOrdersByUser(User utente) {
+        List<Order> ordini = orderRepository.findByUtente(utente);
+        return ordini.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    private OrderResponseDto convertToDto(Order ordine) {
+        OrderResponseDto dto = new OrderResponseDto();
+        dto.setId(ordine.getId());
+        dto.setDataOrdine(ordine.getDataOrdine());
+        dto.setTotale(ordine.getTotale());
+
+        List<OrderItemResponseDto> itemDtos = ordine.getItems().stream().map(item -> {
+            OrderItemResponseDto itemDto = new OrderItemResponseDto();
+            itemDto.setProductId(item.getProdotto().getId());
+            itemDto.setNomeProdotto(item.getProdotto().getNome());
+            itemDto.setQuantita(item.getQuantita());
+            itemDto.setPrezzo(item.getPrezzo());
+            return itemDto;
+        }).collect(Collectors.toList());
+
+        dto.setItems(itemDtos);
+        return dto;
     }
 }

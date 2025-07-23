@@ -15,16 +15,18 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-  //Get user
+
+
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id){
+    public ResponseEntity<User> getUserById(@PathVariable Integer id) {
         return userService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-    //Put
+
+    // ✅ PUT user update
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updateUser){
+    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User updateUser) {
         return userService.findById(id).map(user -> {
             user.setNome(updateUser.getNome());
             user.setCognome(updateUser.getCognome());
@@ -32,20 +34,8 @@ public class UserController {
             user.setPassword(updateUser.getPassword());
             return ResponseEntity.ok(userService.save(user));
         }).orElse(ResponseEntity.notFound().build());
-        }
-        // Delete
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
-        if(userService.findById(id).isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        userService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
-    @GetMapping("/me")
-    public ResponseEntity<User> getMe(Authentication authentication) {
-        String email = authentication.getName(); // recuperato dal JWT
-        User user = userService.getByEmailOrThrow(email);
-        return ResponseEntity.ok(user);
-    }
+
+
+    public ResponseEntity<Void> deleteUs;
 }

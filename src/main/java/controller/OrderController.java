@@ -1,6 +1,7 @@
 package controller;
 
 import dto.OrderRequestDto;
+import dto.OrderResponseDto;
 import model.Order;
 import model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,20 +27,20 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(Authentication auth, @RequestBody OrderRequestDto orderDto) {
+    public ResponseEntity<OrderResponseDto> createOrder(Authentication auth, @RequestBody OrderRequestDto orderDto) {
         User user = userService.findByEmail(auth.getName())
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
-        Order ordine = orderService.createOrder(user, orderDto);
-        return ResponseEntity.ok(ordine);
+        OrderResponseDto ordineDto = orderService.createOrder(user, orderDto);
+        return ResponseEntity.ok(ordineDto);
     }
 
     @GetMapping
-    public ResponseEntity<List<Order>> getUserOrders(Authentication auth) {
+    public ResponseEntity<List<OrderResponseDto>> getUserOrders(Authentication auth) {
         User user = userService.findByEmail(auth.getName())
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
-        List<Order> ordini = orderService.getOrdersByUser(user);
+        List<OrderResponseDto> ordini = orderService.getOrdersByUser(user);
         return ResponseEntity.ok(ordini);
     }
 }

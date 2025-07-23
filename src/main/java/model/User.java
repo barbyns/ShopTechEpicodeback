@@ -15,7 +15,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String nome;
     private String cognome;
@@ -34,4 +34,6 @@ public class User {
     public void setRuolo(String ruolo) {
         this.ruoli = Set.of(ruolo);
     }
+
+
 }
