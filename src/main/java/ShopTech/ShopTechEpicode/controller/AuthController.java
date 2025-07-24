@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import ShopTech.ShopTechEpicode.service.UserService;
 import ShopTech.ShopTechEpicode.util.JwtUtil;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
