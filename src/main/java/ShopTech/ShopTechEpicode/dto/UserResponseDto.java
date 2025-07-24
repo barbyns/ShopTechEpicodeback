@@ -4,5 +4,4 @@ public class UserResponseDto {
     private String nome;
     private String cognome;
     private String email;
-    // niente password qui!
 }
