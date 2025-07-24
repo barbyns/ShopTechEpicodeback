@@ -1,6 +1,8 @@
 package ShopTech.ShopTechEpicode.controller;
 
+import ShopTech.ShopTechEpicode.dto.ProductResponseDto;
 import ShopTech.ShopTechEpicode.model.Product;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +41,7 @@ public class ProductController {
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         Product saved = productService.save(product);
         return ResponseEntity.ok(saved);
+
     }
 
     // PUT update product
