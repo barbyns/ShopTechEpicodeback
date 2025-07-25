@@ -27,13 +27,13 @@ public class User {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
     @Column(name = "ruolo")
     private Set<String> ruoli;
 
-    // Metodo di utilità per impostare un ruolo singolo (es: "USER")
+    // Metodo di utilità per impostare un ruolo singolo
     public void setRuolo(String ruolo) {
         this.ruoli = Set.of(ruolo);
     }
-
 
 }

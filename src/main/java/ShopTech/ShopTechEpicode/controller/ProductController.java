@@ -1,12 +1,12 @@
 package ShopTech.ShopTechEpicode.controller;
 
-import ShopTech.ShopTechEpicode.dto.ProductResponseDto;
 import ShopTech.ShopTechEpicode.model.Product;
+import ShopTech.ShopTechEpicode.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ShopTech.ShopTechEpicode.service.ProductService;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,13 +22,13 @@ public class ProductController {
         this.productService = productService;
     }
 
-    // GET all products
+    // ✅ Accessibile a tutti
     @GetMapping
     public List<Product> getAllProducts() {
         return productService.findAll();
     }
 
-    // GET single product by ID
+    // ✅ Accessibile a tutti
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         Optional<Product> product = productService.findById(id);
@@ -36,21 +36,22 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // POST create product
+    // ✅ Solo ADMIN
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
         Product saved = productService.save(product);
         return ResponseEntity.ok(saved);
-
     }
 
-    // PUT update product
+    // ✅ Solo ADMIN
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
-        Optional<Product> productOptional = productService.findById(id);
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product productDetails) {
+        Optional<Product> optionalProduct = productService.findById(id);
 
-        if (productOptional.isPresent()) {
-            Product product = productOptional.get();
+        if (optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
             product.setNome(productDetails.getNome());
             product.setDescrizione(productDetails.getDescrizione());
             product.setPrezzo(productDetails.getPrezzo());
@@ -63,12 +64,13 @@ public class ProductController {
         }
     }
 
-    // DELETE product
+    // ✅ Solo ADMIN
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        Optional<Product> productOptional = productService.findById(id);
+        Optional<Product> optionalProduct = productService.findById(id);
 
-        if (productOptional.isPresent()) {
+        if (optionalProduct.isPresent()) {
             productService.delete(id);
             return ResponseEntity.ok().build();
         } else {

@@ -3,17 +3,17 @@ package ShopTech.ShopTechEpicode.controller;
 import ShopTech.ShopTechEpicode.dto.AuthResponseDto;
 import ShopTech.ShopTechEpicode.dto.LoginDto;
 import ShopTech.ShopTechEpicode.dto.RegisterDto;
+import ShopTech.ShopTechEpicode.model.User;
+import ShopTech.ShopTechEpicode.service.UserService;
+import ShopTech.ShopTechEpicode.util.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ShopTech.ShopTechEpicode.model.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import ShopTech.ShopTechEpicode.service.UserService;
-import ShopTech.ShopTechEpicode.util.JwtUtil;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -26,13 +26,13 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-
+    // ✅ REGISTRAZIONE
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(@RequestBody @Valid RegisterDto registerDto) {
         if (userService.existsByEmail(registerDto.getEmail())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new AuthResponseDto("Email già registrata", null));
+                    .body(new AuthResponseDto("Email già registrata", null, null));
         }
 
         User user = User.builder()
@@ -42,10 +42,13 @@ public class AuthController {
                 .password(passwordEncoder.encode(registerDto.getPassword()))
                 .build();
 
+        // ✅ Imposta ruolo di default
         user.setRuolo("USER");
         userService.save(user);
 
-        return ResponseEntity.ok(new AuthResponseDto("Registrazione completata", null));
+        return ResponseEntity.ok(
+                new AuthResponseDto("Registrazione completata", null, user.getRuoli())
+        );
     }
 
     // ✅ LOGIN
@@ -58,7 +61,13 @@ public class AuthController {
                 )
         );
 
-        String jwt = jwtUtil.generateToken(authentication.getName());
-        return ResponseEntity.ok(new AuthResponseDto("Login effettuato con successo", jwt));
+        User user = userService.findByEmail(loginDto.getEmail())
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        String jwt = jwtUtil.generateToken(user.getEmail());
+
+        return ResponseEntity.ok(
+                new AuthResponseDto("Login effettuato con successo", jwt, user.getRuoli())
+        );
     }
 }

@@ -20,19 +20,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
-    // Gestione eccezioni personalizzate (es. risorse non trovate)
+    // Gestione eccezioni personalizzate
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<AuthResponseDto> handleResourceNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new AuthResponseDto(ex.getMessage(), null)
+                new AuthResponseDto(ex.getMessage(), null, null)
         );
     }
 
-    // Fallback per errori generici
+    // Fallback generico
     @ExceptionHandler(Exception.class)
     public ResponseEntity<AuthResponseDto> handleGeneric(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                new AuthResponseDto("Errore interno: " + ex.getMessage(), null)
+                new AuthResponseDto("Errore interno: " + ex.getMessage(), null, null)
         );
     }
+
 }
