@@ -1,16 +1,19 @@
 package ShopTech.ShopTechEpicode.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class User {
 
     @Id
@@ -27,13 +30,15 @@ public class User {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Enumerated(EnumType.STRING)
     @Column(name = "ruolo")
-    private Set<String> ruoli;
+    private Set<String> ruoli = new java.util.HashSet<>(); // ✅ inizializzazione sicura
 
-    // Metodo di utilità per impostare un ruolo singolo
+    // ✅ Metodo di utilità per aggiungere un ruolo singolo
     public void setRuolo(String ruolo) {
         this.ruoli = Set.of(ruolo);
     }
 
+    public void addRuolo(String ruolo) {
+        this.ruoli.add(ruolo);
+    }
 }
