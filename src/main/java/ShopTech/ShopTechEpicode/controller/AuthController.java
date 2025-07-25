@@ -26,7 +26,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    // 🔐 REGISTRAZIONE
+    // ✅ REGISTRAZIONE
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(@RequestBody @Valid RegisterDto registerDto) {
         if (userService.existsByEmail(registerDto.getEmail())) {
@@ -42,15 +42,16 @@ public class AuthController {
                 .password(passwordEncoder.encode(registerDto.getPassword()))
                 .build();
 
-        // 👤 Ruolo predefinito USER
-        user.getRuoli().add("USER");
-
+        // ✅ Imposta ruolo di default
+        user.setRuolo("USER");
         userService.save(user);
 
-        return ResponseEntity.ok(new AuthResponseDto("Registrazione completata", null, user.getRuoli()));
+        return ResponseEntity.ok(
+                new AuthResponseDto("Registrazione completata", null, user.getRuoli())
+        );
     }
 
-    // 🔐 LOGIN
+    // ✅ LOGIN
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -60,8 +61,8 @@ public class AuthController {
                 )
         );
 
-        // ✅ Ottieni utente loggato
-        User user = userService.findByEmail(loginDto.getEmail()).orElseThrow();
+        User user = userService.findByEmail(loginDto.getEmail())
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
         String jwt = jwtUtil.generateToken(user.getEmail());
 

@@ -42,11 +42,4 @@ public class OrderController {
         List<OrderResponseDto> ordini = orderService.getOrdersByUser(user);
         return ResponseEntity.ok(ordini);
     }
-    @PostMapping
-    public ResponseEntity<?> creaOrdine(@RequestBody OrderRequestDto request) {
-        // logica di salvataggio ordine
-        return ResponseEntity.ok("Ordine creato");
-    }
 }
-
-

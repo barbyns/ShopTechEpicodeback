@@ -5,10 +5,5 @@ import java.util.List;
 
 @Data
 public class OrderRequestDto {
-    private List <OrderItemDto> orderItems;
-
-    public OrderItemDto[] getItems() {
-        return new OrderItemDto[0];
-    }
+    private List <OrderItemDto> items;
 }
-
