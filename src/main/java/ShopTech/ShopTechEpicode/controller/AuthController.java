@@ -15,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/auth")
@@ -25,7 +27,6 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(@RequestBody @Valid RegisterDto registerDto) {
@@ -42,15 +43,14 @@ public class AuthController {
                 .password(passwordEncoder.encode(registerDto.getPassword()))
                 .build();
 
-
-        user.setRuolo("USER");
+        // Imposta ruolo singolo come Set<String>
+        user.setRuoli("USER");
         userService.save(user);
 
         return ResponseEntity.ok(
                 new AuthResponseDto("Registrazione completata", null, user.getRuoli())
         );
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginDto loginDto) {
@@ -64,10 +64,13 @@ public class AuthController {
         User user = userService.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
+        // Corretto: passa anche i ruoli come Set<String> al metodo generateToken aggiornato
         String jwt = jwtUtil.generateToken(user.getEmail(), user.getRuoli());
 
         return ResponseEntity.ok(
-                new AuthResponseDto("Login effettuato con successo", jwt, user.getRuoli())
+                new AuthResponseDto("Registrazione completata", null, new ArrayList<>(user.getRuoli()))
         );
+
+
     }
 }

@@ -27,13 +27,16 @@ public class User {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ruolo")
+    @Column(name = "ruolo") // correzione: nome singolare più coerente
     private Set<String> ruoli;
 
-    // Metodo di utilità per impostare un ruolo singolo
-    public void setRuolo(String ruolo) {
+    // ✅ Metodo per impostare un singolo ruolo
+    public void setRuoli(String ruolo) {
         this.ruoli = Set.of(ruolo);
     }
 
+    // ✅ Metodo per ottenere i ruoli (necessario se Lombok non lo riconosce)
+    public Set<String> getRuoli() {
+        return ruoli;
+    }
 }
