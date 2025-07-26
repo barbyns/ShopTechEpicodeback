@@ -26,7 +26,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    // ✅ REGISTRAZIONE
+
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(@RequestBody @Valid RegisterDto registerDto) {
         if (userService.existsByEmail(registerDto.getEmail())) {
@@ -42,7 +42,7 @@ public class AuthController {
                 .password(passwordEncoder.encode(registerDto.getPassword()))
                 .build();
 
-        // ✅ Imposta ruolo di default
+
         user.setRuolo("USER");
         userService.save(user);
 
@@ -51,7 +51,7 @@ public class AuthController {
         );
     }
 
-    // ✅ LOGIN
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -64,7 +64,7 @@ public class AuthController {
         User user = userService.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
-        String jwt = jwtUtil.generateToken(user.getEmail());
+        String jwt = jwtUtil.generateToken(user.getEmail(), user.getRuoli());
 
         return ResponseEntity.ok(
                 new AuthResponseDto("Login effettuato con successo", jwt, user.getRuoli())

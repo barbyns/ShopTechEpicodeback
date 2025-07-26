@@ -24,6 +24,7 @@ public class JwtUtil {
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS512)
