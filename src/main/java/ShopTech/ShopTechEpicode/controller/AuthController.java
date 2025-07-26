@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -48,7 +50,7 @@ public class AuthController {
         userService.save(user);
 
         return ResponseEntity.ok(
-                new AuthResponseDto("Registrazione completata", null, user.getRuoli())
+                new AuthResponseDto("Registrazione completata", null, new HashSet<>(user.getRuoli()))
         );
     }
 
@@ -64,13 +66,10 @@ public class AuthController {
         User user = userService.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
-        // Corretto: passa anche i ruoli come Set<String> al metodo generateToken aggiornato
-        String jwt = jwtUtil.generateToken(user.getEmail(), user.getRuoli());
-
+        // Converti Set<String> in List<String> per compatibilità
+        List<String> ruoliList = new ArrayList<>(user.getRuoli());
+        String jwt = jwtUtil.generateToken(user.getEmail(), ruoliList);
         return ResponseEntity.ok(
-                new AuthResponseDto("Registrazione completata", null, new ArrayList<>(user.getRuoli()))
-        );
-
-
+                new AuthResponseDto("Login effettuato con successo", jwt, new HashSet<>(ruoliList)));
     }
 }
