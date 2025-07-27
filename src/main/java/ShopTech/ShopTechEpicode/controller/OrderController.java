@@ -3,6 +3,7 @@ package ShopTech.ShopTechEpicode.controller;
 import ShopTech.ShopTechEpicode.dto.OrderRequestDto;
 import ShopTech.ShopTechEpicode.dto.OrderResponseDto;
 import ShopTech.ShopTechEpicode.model.User;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -26,7 +27,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponseDto> createOrder(Authentication auth, @RequestBody OrderRequestDto orderDto) {
+    public ResponseEntity<OrderResponseDto> createOrder(Authentication auth, @RequestBody @Valid OrderRequestDto orderDto) {
         User user = userService.findByEmail(auth.getName())
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
