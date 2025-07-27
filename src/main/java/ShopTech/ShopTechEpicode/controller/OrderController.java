@@ -12,7 +12,7 @@ import ShopTech.ShopTechEpicode.service.OrderService;
 import ShopTech.ShopTechEpicode.service.UserService;
 
 import java.util.List;
-
+@CrossOrigin (origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
